@@ -44,7 +44,13 @@ class App extends Component {
             second: value / 52 / 40 / 60 / 60
         };
 
-        console.log(moneyPerTime);
+        const { hour, min, second } = moneyPerTime;
+
+        this.setState({
+            seconds: second,
+            minutes: min,
+            hours: hour
+        });
     };
 
     handleChange = value => {
@@ -54,7 +60,7 @@ class App extends Component {
     handleSubmit = event => {
         event.preventDefault();
         const { salary } = event.target;
-        console.log(salary.value);
+        // console.log(salary.value);
         this.setState(
             {
                 salary: salary.value
