@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 
+import Timer from "./Components/Timer";
 import SalaryForm from "./Components/SalaryForm";
 
 import "./App.css";
@@ -10,7 +11,8 @@ class App extends Component {
         minutes: 0,
         hours: 0,
         salaryInput: "",
-        salary: null
+        salary: null,
+        isPlaying: false
     };
 
     componentDidUpdate() {
@@ -23,25 +25,15 @@ class App extends Component {
         });
     };
 
-    startTimer = currentValue => {
-        setInterval(() => {
-            this.setState({
-                seconds: (currentValue += 1)
-            });
-
-            if (this.state.seconds > 60) {
-                this.setState({
-                    seconds: 0
-                });
-            }
-        }, 1000);
+    startTimer = () => {
+        setInterval(() => this.chronometer, 1000);
     };
 
     calcSalaryTime = value => {
         const moneyPerTime = {
-            hour: value / 52 / 40,
-            min: value / 52 / 40 / 60,
-            second: value / 52 / 40 / 60 / 60
+            hour: (value / 2080).toFixed(2),
+            min: (value / 124800).toFixed(2),
+            second: (value / 7488000).toFixed(2)
         };
 
         const { hour, min, second } = moneyPerTime;
@@ -60,16 +52,30 @@ class App extends Component {
     handleSubmit = event => {
         event.preventDefault();
         const { salary } = event.target;
-        // console.log(salary.value);
-        this.setState(
-            {
-                salary: salary.value
-            },
+        this.setState({ isPlaying: true, salary: salary.value }, () => {
+            this.calcSalaryTime(this.state.salary);
+        });
+    };
 
-            () => {
-                this.calcSalaryTime(this.state.salary);
-            }
-        );
+    chronometer = () => {
+        const { seconds, minutes, hours } = this.state;
+        if (seconds < 10) {
+            this.setState(previewsState => {});
+        }
+
+        if (seconds > 59) {
+            seconds = `00`;
+            minutes++;
+
+            if (minutes < 10) minutes = `0` + minutes;
+        }
+
+        if (minutes > 59) {
+            minutes = `00`;
+            hours++;
+
+            if (hours < 10) hours = `0` + hours;
+        }
     };
     render() {
         return (
@@ -79,6 +85,7 @@ class App extends Component {
                     handleChange={e => this.handleChange(e.target.value)}
                     handleForm={e => this.handleSubmit(e)}
                 />
+                <Timer display={this.state} playing={this.state.isPlaying} />
             </div>
         );
     }
