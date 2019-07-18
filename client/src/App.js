@@ -1,47 +1,39 @@
-import React, { Component } from "react";
-
-import Timer from "./Components/Timer";
-import SalaryForm from "./Components/SalaryForm";
-
-import "./App.css";
+import React, { Component } from 'react';
+import 'react-table/react-table.css';
+import Timer from './Components/Timer';
+import SalaryForm from './Components/SalaryForm';
+import Table from './Components/Table';
+import './App.css';
 
 class App extends Component {
     state = {
-        seconds: 0,
-        minutes: 0,
-        hours: 0,
-        salaryInput: "",
+        salaryInput: '',
+        hours: '',
+        minutes: '',
+        seconds: '',
         salary: null,
-        isPlaying: false
-    };
-
-    componentDidUpdate() {
-        console.log(this.state);
-    }
-
-    addOne = currentValue => {
-        this.setState({
-            timer: (currentValue += 1)
-        });
-    };
-
-    startTimer = () => {
-        setInterval(() => this.chronometer, 1000);
+        isPlaying: false,
+        moneyMade: 0,
+        timerOn: false,
+        timerStart: 0,
+        timerTime: 0
     };
 
     calcSalaryTime = value => {
         const moneyPerTime = {
-            hour: (value / 2080).toFixed(2),
-            min: (value / 124800).toFixed(2),
-            second: (value / 7488000).toFixed(2)
+            perMonth: (value / 12).toFixed(2),
+            perWeek: (value / 52).toFixed(2),
+            perHour: (value / 2080).toFixed(2),
+            perMin: (value / 124800).toFixed(2),
+            perSecond: (value / 7488000).toFixed(3)
         };
 
-        const { hour, min, second } = moneyPerTime;
+        const { perHour, perMin, perSecond } = moneyPerTime;
 
         this.setState({
-            seconds: second,
-            minutes: min,
-            hours: hour
+            seconds: perSecond,
+            minutes: perMin,
+            hours: perHour
         });
     };
 
@@ -52,32 +44,50 @@ class App extends Component {
     handleSubmit = event => {
         event.preventDefault();
         const { salary } = event.target;
-        this.setState({ isPlaying: true, salary: salary.value }, () => {
-            this.calcSalaryTime(this.state.salary);
+        this.setState(
+            { isPlaying: true, salary: salary.value },
+
+            () => {
+                this.calcSalaryTime(this.state.salary);
+            }
+        );
+    };
+
+    // TIMER
+    startTimer = () => {
+        this.setState({
+            timerOn: true,
+            timerTime: this.state.timerTime,
+            timerStart: Date.now() - this.state.timerTime
+        });
+        this.timer = setInterval(() => {
+            this.setState({
+                moneyMade:
+                    this.state.moneyMade + parseFloat(this.state.seconds),
+                timerTime: Date.now() - this.state.timerStart
+            });
+        }, 1000);
+    };
+
+    stopTimer = () => {
+        this.setState({ timerOn: false });
+        clearInterval(this.timer);
+    };
+    resetTimer = () => {
+        this.setState({
+            timerStart: 0,
+            timerTime: 0,
+            moneyMade: 0
         });
     };
-
-    chronometer = () => {
-        const { seconds, minutes, hours } = this.state;
-        if (seconds < 10) {
-            this.setState(previewsState => {});
-        }
-
-        if (seconds > 59) {
-            seconds = `00`;
-            minutes++;
-
-            if (minutes < 10) minutes = `0` + minutes;
-        }
-
-        if (minutes > 59) {
-            minutes = `00`;
-            hours++;
-
-            if (hours < 10) hours = `0` + hours;
-        }
-    };
+    // =================================================================================
     render() {
+        // Chronometer logic
+        const { timerTime } = this.state;
+        let centiseconds = ('0' + (Math.floor(timerTime / 10) % 100)).slice(-2);
+        let seconds = ('0' + (Math.floor(timerTime / 1000) % 60)).slice(-2);
+        let minutes = ('0' + (Math.floor(timerTime / 60000) % 60)).slice(-2);
+        let hours = ('0' + Math.floor(timerTime / 3600000)).slice(-2);
         return (
             <div className="App">
                 <SalaryForm
@@ -86,6 +96,29 @@ class App extends Component {
                     handleForm={e => this.handleSubmit(e)}
                 />
                 <Timer display={this.state} playing={this.state.isPlaying} />
+                <div>
+                    <span>
+                        Money Made: {`\$${this.state.moneyMade.toFixed(3)}`}
+                    </span>
+                </div>
+                <div className="Stopwatch-display">
+                    {hours} : {minutes} : {seconds} : {centiseconds}
+                    {this.state.timerOn === false &&
+                        this.state.timerTime === 0 && (
+                            <button onClick={this.startTimer}>Start</button>
+                        )}
+                    {this.state.timerOn === true && (
+                        <button onClick={this.stopTimer}>Stop</button>
+                    )}
+                    {this.state.timerOn === false &&
+                        this.state.timerTime > 0 && (
+                            <button onClick={this.startTimer}>Resume</button>
+                        )}
+                    {this.state.timerOn === false &&
+                        this.state.timerTime > 0 && (
+                            <button onClick={this.resetTimer}>Reset</button>
+                        )}
+                </div>
             </div>
         );
     }

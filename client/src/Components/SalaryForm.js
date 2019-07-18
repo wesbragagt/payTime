@@ -11,7 +11,7 @@ export default function SalaryForm({ inputVal, handleChange, handleForm }) {
                     value={inputVal}
                     onChange={handleChange}
                 />
-                <button type="submit">Submit</button>
+                <button type="submit">Start</button>
             </form>
         </div>
     );
