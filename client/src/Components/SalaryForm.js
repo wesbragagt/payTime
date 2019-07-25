@@ -4,14 +4,14 @@ export default function SalaryForm({ inputVal, handleChange, handleForm }) {
     return (
         <div className="salary_form">
             <form onSubmit={handleForm}>
-                <label>Salary/Hour</label>
+                
                 <input
                     name="salary"
-                    placeholder="$50,000"
+                    placeholder="insert annual income Ex: 50000"
                     value={inputVal}
                     onChange={handleChange}
                 />
-                <button type="submit">Start</button>
+                <button type="submit">Calculate</button>
             </form>
         </div>
     );

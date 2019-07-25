@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import 'react-table/react-table.css';
 import Timer from './Components/Timer';
 import SalaryForm from './Components/SalaryForm';
-import Table from './Components/Table';
 import './App.css';
 
 class App extends Component {
@@ -96,13 +95,9 @@ class App extends Component {
                     handleForm={e => this.handleSubmit(e)}
                 />
                 <Timer display={this.state} playing={this.state.isPlaying} />
-                <div>
-                    <span>
-                        Money Made: {`\$${this.state.moneyMade.toFixed(3)}`}
-                    </span>
-                </div>
+
                 <div className="Stopwatch-display">
-                    {hours} : {minutes} : {seconds} : {centiseconds}
+                    {hours} : {minutes} : {seconds} 
                     {this.state.timerOn === false &&
                         this.state.timerTime === 0 && (
                             <button onClick={this.startTimer}>Start</button>
@@ -118,6 +113,9 @@ class App extends Component {
                         this.state.timerTime > 0 && (
                             <button onClick={this.resetTimer}>Reset</button>
                         )}
+                </div>
+                <div className="moneyMade">
+                    <span>{`\$${this.state.moneyMade.toFixed(3)}`}</span>
                 </div>
             </div>
         );
