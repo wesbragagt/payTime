@@ -81,6 +81,7 @@ class App extends Component {
     };
     // =================================================================================
     render() {
+        console.log('testing log');
         // Chronometer logic
         const { timerTime } = this.state;
         let centiseconds = ('0' + (Math.floor(timerTime / 10) % 100)).slice(-2);
@@ -97,7 +98,7 @@ class App extends Component {
                 <Timer display={this.state} playing={this.state.isPlaying} />
 
                 <div className="Stopwatch-display">
-                    {hours} : {minutes} : {seconds} 
+                    {hours} : {minutes} : {seconds}
                     {this.state.timerOn === false &&
                         this.state.timerTime === 0 && (
                             <button onClick={this.startTimer}>Start</button>
